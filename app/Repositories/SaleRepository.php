@@ -9,7 +9,7 @@ class SaleRepository implements SaleRepositoryInterface
 {
     public function all()
     {
-        return Sale::with('customer')->get();
+        return Sale::with('customer', 'saleItems.stock')->get();
     }
 
     public function find($id)
@@ -39,7 +39,7 @@ class SaleRepository implements SaleRepositoryInterface
 
     public function getByDateRange(string $startDate, string $endDate)
     {
-        return Sale::with(['customer', 'items.stocks'])
+        return Sale::with(['customer', 'saleItems.stock'])
             ->whereBetween('date', [$startDate, $endDate])
             ->orderBy('date', 'desc')
             ->get();
