@@ -47,7 +47,7 @@ class SaleController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'successful',
-                'data' => $sale
+                'data' => new SaleResource($sale)
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -81,7 +81,7 @@ class SaleController extends Controller
             return response()->json([
                 'status_code' => 201,
                 'message' => 'Data Berhasil dibuat',
-                'data' => $sale,
+                'data' => new SaleResource($sale),
             ], 201);
         } catch (Exception $e) {
             return response()->json([
@@ -116,7 +116,7 @@ class SaleController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'Data Berhasil diubah',
-                'data' => $sale,
+                'data' => new SaleResource($sale),
             ], 200);
         } catch (Exception $e) {
             return response()->json([
