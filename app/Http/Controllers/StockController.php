@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StockResource;
 use App\Services\Interfaces\StockServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class StockController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'successful',
-                'data' => $stocks
+                'data' => StockResource::collection($stocks)
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -43,7 +44,7 @@ class StockController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'successful',
-                'data' => $stock
+                'data' => new StockResource($stock)
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -75,7 +76,7 @@ class StockController extends Controller
             return response()->json([
                 'status_code' => 201,
                 'message' => 'Data Berhasil dibuat',
-                'data' => $stock
+                'data' => new StockResource($stock)
             ], 201);
         } catch (Exception $e) {
             return response()->json([
@@ -107,7 +108,7 @@ class StockController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'Data Berhasil diubah',
-                'data' => $stock
+                'data' => new StockResource($stock)
             ]);
         } catch (Exception $e) {
             return response()->json([

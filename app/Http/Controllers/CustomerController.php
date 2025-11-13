@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CustomerResource;
 use App\Services\Interfaces\CustomerServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,24 +19,36 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $customers = $this->customerService->getAllCustomers();
+        try {
+            $customers = $this->customerService->getAllCustomers();
 
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'successful',
-            'data' => $customers
-        ]);
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'successful',
+                'data' => CustomerResource::collection($customers),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => $e->getCode() ?: 500,
+                'message' => $e->getMessage(),
+
+            ], $e->getCode() ?: 500);
+        }
     }
 
     public function show($id)
     {
-        $customer = $this->customerService->getCustomerById($id);
+        try {
+            $customer = $this->customerService->getCustomerById($id);
 
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'successful',
-            'data' => $customer
-        ]);
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'successful',
+                'data' => new CustomerResource($customer)
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     public function store(Request $request)
@@ -52,38 +65,47 @@ class CustomerController extends Controller
                 'message' => $validator->errors()->first() ?: 'Validation error',
             ], 422);
         }
-        $data = $request->only(['name', 'domicile', 'gender']);
-        $customer = $this->customerService->createCustomer($data);
+        try {
+            $data = $request->only(['name', 'domicile', 'gender']);
+            $customer = $this->customerService->createCustomer($data);
 
-        return response()->json([
-            'status_code' => 201,
-            'message' => 'Data Berhasil dibuat',
-            'data' => $customer
-        ], 201);
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Data Berhasil dibuat',
+                'data' => new CustomerResource($customer)
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => $e->getCode() ?: 500,
+                'message' => $e->getMessage(),
+
+            ], $e->getCode() ?: 500);
+        }
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'domicile' => 'required|string',
-                'gender' => 'required|string|in:Pria,Wanita'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'domicile' => 'required|string',
+            'gender' => 'required|string|in:Pria,Wanita'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status_code' => 422,
-                    'message' => $validator->errors()->first() ?: 'Validation error',
-                ], 422);
-            }
+        if ($validator->fails()) {
+            return response()->json([
+                'status_code' => 422,
+                'message' => $validator->errors()->first() ?: 'Validation error',
+            ], 422);
+        }
+        try {
+
             $data = $request->only(['name', 'domicile', 'gender']);
             $customer = $this->customerService->updateCustomer($data, $id);
 
             return response()->json([
                 'status_code' => 200,
                 'message' => 'Data Berhasil diubah',
-                'data' => $customer
+                'data' => new CustomerResource($customer)
             ]);
         } catch (Exception $e) {
             return response()->json([

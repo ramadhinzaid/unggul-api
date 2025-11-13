@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SaleResource;
 use App\Services\Interfaces\SaleServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class SaleController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'message' => 'successful',
-                'data' => $sales
+                'data' => SaleResource::collection($sales)
             ]);
         } catch (Exception $e) {
             return response()->json([

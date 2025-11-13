@@ -24,7 +24,12 @@ class StockRepository implements StockRepositoryInterface
 
     public function update(array $data, $id)
     {
-        return $this->find($id)->update($data);
+        $stock = $this->find($id);
+        if (!$stock) {
+            return false;
+        }
+        $stock->update($data);
+        return $stock;
     }
 
     public function delete($id)
