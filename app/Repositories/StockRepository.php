@@ -14,7 +14,7 @@ class StockRepository implements StockRepositoryInterface
 
     public function find($id)
     {
-        return Stock::where(['id' => $id])->orWhere(['code' => $id])->first();
+        return Stock::where(['id' => $id])->orWhere(['code' => $id])->firstOrFail();
     }
 
     public function create(array $data)
@@ -34,6 +34,10 @@ class StockRepository implements StockRepositoryInterface
 
     public function delete($id)
     {
-        return Stock::destroy($id);
+        $stock = $this->find($id);
+        if (!$stock) {
+            return false;
+        }
+        return   $stock->delete($id);
     }
 }

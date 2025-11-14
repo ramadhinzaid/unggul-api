@@ -10,7 +10,7 @@ class SaleItemRepository implements SaleItemRepositoryInterface
 
     public function findStockByNoteAndCode($note, $code)
     {
-        return SaleItem::with('stock')->where(['note' => $note, 'stock_code' => $code])->first();
+        return SaleItem::with('stock')->where(['note' => $note, 'stock_code' => $code])->firstOrFail();
     }
 
     public function create(array $data)
